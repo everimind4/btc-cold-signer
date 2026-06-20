@@ -1,0 +1,18 @@
+{
+  "network": "testnet",
+  "inputs": [
+    {
+      "txid": "c53165b88e66d8f70293a038a2c7b310fe3646609c280df01aada6cee82c1ab",
+      "vout": 1,
+      "value_sat": 304896,
+      "private_key_wif": "dummy_private_key",
+      "script_pubkey": "001473bc30a98c6177e24aa1a37d71de8ac3acb4462e"
+    }
+  ],
+  "outputs": [
+    {
+      "address": "tb1qerzrlxcfu24davlur5sqmgzzgsal6wusda40er",
+      "value_sat": 280000
+    }
+  ]
+}
