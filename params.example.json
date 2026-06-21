@@ -13,6 +13,10 @@
     {
       "address": "tb1qerzrlxcfu24davlur5sqmgzzgsal6wusda40er",
       "value_sat": 280000
+    },
+    {
+      "address": "tb1qww7rp2vvv9m7yj4p5d7hrh52cwktg33wgge6us",
+      "value_sat": 20000
     }
   ]
 }
