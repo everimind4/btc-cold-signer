@@ -1,4 +1,5 @@
 mod param;
+mod tx;
 
 use std::fs;
 use std::env;
@@ -13,5 +14,6 @@ fn main() {
     let parsed: param::Params = serde_json::from_str(&param_json)
         .expect("failed parse json");
 
-    println!("{:#?}", parsed);
+    let transaction = tx::build_tx(&parsed);
+    println!("{:#?}", transaction);
 }
