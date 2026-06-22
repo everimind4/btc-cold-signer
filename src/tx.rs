@@ -3,6 +3,12 @@ use bitcoin::{Transaction, TxIn, Txid, TxOut, OutPoint, Amount, Address, Network
 use std::str::FromStr;
 
 pub fn build_tx(params: &Params) -> Transaction { 
+    let network = match params.network.as_str() {
+        "mainnet" => Network::Bitcoin,
+        "testnet" => Network::Testnet,
+        _ => panic!("Not supported network: {}", params.network),
+    };
+
     let tx_inputs: Vec<TxIn> = params.inputs.iter().map(|input| {
         TxIn {
             previous_output: OutPoint {
@@ -17,7 +23,7 @@ pub fn build_tx(params: &Params) -> Transaction {
 
     let tx_outputs: Vec<TxOut> = params.outputs.iter().map(|output| {
         let address = Address::from_str(&output.address).unwrap()
-                      .require_network(Network::Testnet).unwrap();
+                      .require_network(network).unwrap();
         TxOut {
             value: Amount::from_sat(output.value_sat),
             script_pubkey: address.script_pubkey(),
