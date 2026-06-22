@@ -6,14 +6,19 @@ Offline Bitcoin transaction signer (CLI). Signs a P2WPKH transaction using a pri
 
 ```bash
 # 1. Prepare params.json (see params.example.json)
+#    Fill in your UTXO info and private key
 
-cp params.example.json params.json
-# Fill in your UTXO info and private key
+  $ cp params.example.json params.json
 
-# 2. Sign (offline - no network required)
-cargo run -- params.json
+# 2. Build
 
-# 3. Broadcast the output hex at:
+  $ cargo build --release
+
+# 3. Sign (offline - no network required)
+
+  $ ./target/release/btc-cold-signer params.json
+
+# 4. Broadcast the output hex at:
 #    https://mempool.space/testnet/tx/push
 ```
 ## Test Environment
