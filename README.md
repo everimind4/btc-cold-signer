@@ -14,3 +14,8 @@ via params.json. The signer itself contains no network code,
 ensuring the private key never touches an internet-connected
 process. Fee is calculated as the implicit
 difference between total input and total output value.
+
+## Broadcast Result
+
+A sample execution result is available at:
+https://mempool.space/testnet/tx/52bb87ad340f32f5d502d0655f2a457f96e83797ddb7b5a78e0f84e2ea5dd0a0
