@@ -1,5 +1,6 @@
 mod param;
 mod tx;
+mod signer;
 
 use std::fs;
 use std::env;
