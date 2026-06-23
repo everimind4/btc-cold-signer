@@ -1,28 +1,42 @@
-use crate::param::Params;
+use crate::param::{Params, Input};
 use bitcoin::{Transaction, PrivateKey, Amount, ScriptBuf, EcdsaSighashType, ecdsa};
 use bitcoin::sighash::SighashCache;
 use bitcoin::secp256k1::{Secp256k1, Message};
 use bitcoin::hashes::Hash;
 
 pub fn sign_tx(tx: Transaction, params: &Params) -> String {
+    let secp = Secp256k1::new();
+    let mut sighash_cache = SighashCache::new(tx);
+
+    for (index, input) in params.inputs.iter().enumerate() {
+        sign_input(&secp, &mut sighash_cache, input, index);
+    }
+
+    let signed_tx = sighash_cache.into_transaction();
+    bitcoin::consensus::encode::serialize_hex(&signed_tx)
+}
+
+fn sign_input(
+    secp: &Secp256k1<bitcoin::secp256k1::All>,
+    sighash_cache: &mut SighashCache<Transaction>,
+    input: &Input,
+    index: usize,
+) {
     let private_key = PrivateKey::from_wif(
-        &params.inputs[0].private_key_wif
+        &input.private_key_wif
     ).expect("Invalid WIF private key");
     
     let script_pubkey = ScriptBuf::from_hex(
-        &params.inputs[0].script_pubkey
+        &input.script_pubkey
     ).expect("Invalid script_pubkey hex");
 
-    let mut sighash_cache = SighashCache::new(tx);
-
     let sighash = sighash_cache.p2wpkh_signature_hash(
-        0,
+        index,
         &script_pubkey,
-        Amount::from_sat(params.inputs[0].value_sat),
+        Amount::from_sat(input.value_sat),
         EcdsaSighashType::All,
     ).expect("Failed to compute sighash");
 
-    let secp = Secp256k1::new();
     let message = Message::from_digest(*sighash.as_byte_array());
     let signature = secp.sign_ecdsa(&message, &private_key.inner);
 
@@ -33,13 +47,10 @@ pub fn sign_tx(tx: Transaction, params: &Params) -> String {
 
     let public_key = private_key.public_key(&secp);
     let witness = sighash_cache
-        .witness_mut(0)
-        .expect("Failed to access witness for input 0");
+        .witness_mut(index)
+        .expect(&format!("Failed to access witness for input {}", index));
     *witness = bitcoin::Witness::p2wpkh(
         &bitcoin_sig,
         &public_key.inner,
     );
-
-    let signed_tx = sighash_cache.into_transaction();
-    bitcoin::consensus::encode::serialize_hex(&signed_tx)
 }
