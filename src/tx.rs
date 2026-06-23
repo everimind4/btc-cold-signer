@@ -16,9 +16,9 @@ pub fn build_tx(params: &Params) -> Transaction {
                             .expect("Invalid txid hex"),
                 vout: input.vout,
             },
-            script_sig: ScriptBuf::new(),
+            script_sig: ScriptBuf::new(),   // empty: SegWit uses witness instead
             sequence: Sequence::MAX,
-            witness: Witness::new(),
+            witness: Witness::new(),        // to be filled in by signer
         }
     }).collect();
 

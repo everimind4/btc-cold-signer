@@ -40,6 +40,8 @@ fn sign_input(
     let message = Message::from_digest(*sighash.as_byte_array());
     let signature = secp.sign_ecdsa(&message, &private_key.inner);
 
+    // Wrap secp256k1::ecdsa::Signature into bitcoin::ecdsa::Signature,
+    // which additionally carries the sighash type required by P2WPKH witness
     let bitcoin_sig = ecdsa::Signature {
         signature,
         sighash_type: EcdsaSighashType::All,
