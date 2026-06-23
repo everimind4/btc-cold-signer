@@ -12,7 +12,8 @@ pub fn build_tx(params: &Params) -> Transaction {
     let tx_inputs: Vec<TxIn> = params.inputs.iter().map(|input| {
         TxIn {
             previous_output: OutPoint {
-                txid: Txid::from_str(&input.txid).unwrap(),
+                txid: Txid::from_str(&input.txid)
+                            .expect("Invalid txid hex"),
                 vout: input.vout,
             },
             script_sig: ScriptBuf::new(),
@@ -22,8 +23,8 @@ pub fn build_tx(params: &Params) -> Transaction {
     }).collect();
 
     let tx_outputs: Vec<TxOut> = params.outputs.iter().map(|output| {
-        let address = Address::from_str(&output.address).unwrap()
-                      .require_network(network).unwrap();
+        let address = Address::from_str(&output.address).expect("Invalid address format")
+                               .require_network(network).expect("Address does not match the specified network");
         TxOut {
             value: Amount::from_sat(output.value_sat),
             script_pubkey: address.script_pubkey(),

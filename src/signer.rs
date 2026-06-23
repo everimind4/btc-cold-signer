@@ -7,11 +7,11 @@ use bitcoin::hashes::Hash;
 pub fn sign_tx(tx: Transaction, params: &Params) -> String {
     let private_key = PrivateKey::from_wif(
         &params.inputs[0].private_key_wif
-    ).unwrap();
+    ).expect("Invalid WIF private key");
     
     let script_pubkey = ScriptBuf::from_hex(
         &params.inputs[0].script_pubkey
-    ).unwrap();
+    ).expect("Invalid script_pubkey hex");
 
     let mut sighash_cache = SighashCache::new(tx);
 
@@ -20,7 +20,7 @@ pub fn sign_tx(tx: Transaction, params: &Params) -> String {
         &script_pubkey,
         Amount::from_sat(params.inputs[0].value_sat),
         EcdsaSighashType::All,
-    ).unwrap();
+    ).expect("Failed to compute sighash");
 
     let secp = Secp256k1::new();
     let message = Message::from_digest(*sighash.as_byte_array());
@@ -32,7 +32,10 @@ pub fn sign_tx(tx: Transaction, params: &Params) -> String {
     };
 
     let public_key = private_key.public_key(&secp);
-    *sighash_cache.witness_mut(0).unwrap() = bitcoin::Witness::p2wpkh(
+    let witness = sighash_cache
+        .witness_mut(0)
+        .expect("Failed to access witness for input 0");
+    *witness = bitcoin::Witness::p2wpkh(
         &bitcoin_sig,
         &public_key.inner,
     );
